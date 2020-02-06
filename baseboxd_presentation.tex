@@ -6,6 +6,8 @@
 \usepackage{amssymb}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+
 
 \author{Rubens Figueiredo}
 \title{WIP: Baseboxes}
@@ -297,8 +299,16 @@ Address & RTM\_NEWADDR & RTM\_DELADDR & RTM\_GETADDR \\
 
 % Describe serializing aspect, data types, and nested structures
 \begin{minipage}[t]{0.48\linewidth}
-\includegraphics[scale=0.4]{.png}
-\caption{Basebox technology stack}
+\centering
+\begin{figure}
+% source https://www.infradead.org/~tgr/libnl/doc/core.html
+\includegraphics[scale=0.3]{nlmsghdr.png}
+\caption{Netlink message header.}
+\end{figure}
+\end{minipage}
+\begin{minipage}[t]{0.48\linewidth}
+
+Byte stream that is then composed into one, or many Netlink headers with associated payload.
 
 \end{minipage}
 
