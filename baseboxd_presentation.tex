@@ -22,9 +22,9 @@
 \titlepage
 \end{frame}
 
-%\begin{frame}
-%\tableofcontents
-%\end{frame}
+\begin{frame}
+\tableofcontents
+\end{frame}
 
 % In the past decade Open Networking and Open       
 % Disaggregated hardware software architectures have 
@@ -162,24 +162,26 @@
 \frametitle{What is SDN?}
 \end{frame}
 
-\begin{frame}
 % What are we trying to achieve?
 % OpenFlow is one of the first big steps in moving to OpenNetworking [src] 
 
 % INTRODUCTION
-\section{Introduction}
 \begin{frame}
 \frametitle{What is SDN?}
+
+
 \end{frame}
 
 \begin{frame}
 \frametitle{Switching Devices in SDN}
 \framesubtitle{Notable use cases of SDN}
+
 * Role of switching devices in our two main use cases:
 \begin{enumerate}
 \item Data center networking
 \item Telecom use cases
 \end{enumerate}
+
 \end{frame}
 
 \begin{frame}
@@ -198,7 +200,7 @@ They are traditionally blank network devices, that users can then use their choi
 \framesubtitle{Introduction}
 
 \begin{figure}
-% \includegraphics[scale=0.4]{baseboxd_architecture.png}
+\includegraphics[scale=0.4]{baseboxd_architecture.png}
 \caption{Basebox technology stack}
 \end{figure}
 
@@ -212,9 +214,6 @@ They are traditionally blank network devices, that users can then use their choi
 \begin{frame}
 \frametitle{So, how does Basebox work?}
 \framesubtitle{OpenFlow}
-
-
-
 
 \end{frame}
 
@@ -297,6 +296,11 @@ Address & RTM\_NEWADDR & RTM\_DELADDR & RTM\_GETADDR \\
 \framesubtitle{On Netlink messages}
 
 % Describe serializing aspect, data types, and nested structures
+\begin{minipage}[t]{0.48\linewidth}
+\includegraphics[scale=0.4]{.png}
+\caption{Basebox technology stack}
+
+\end{minipage}
 
 \end{frame}
 
@@ -348,6 +352,7 @@ Two OpenFlow help libraries known as rofl (Revised OpenFlow library).
 \begin{frame}
 \frametitle{So, how does Basebox work?}
 \framesubtitle{code structure}
+
 % Mention nl_l3 and cnetlink 
 % Notable subsystems:
 %	nl_bridge: handles bridge related stuff. Maybe point to vlan_aware bridge check in baseboxd!
