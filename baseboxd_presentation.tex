@@ -217,27 +217,55 @@ They are traditionally blank network devices, that users can then use their choi
 \frametitle{So, how does Basebox work?}
 \framesubtitle{OpenFlow}
 
+\begin{minipage}[t]{0.48\linewidth}
+\begin{figure}
+\includegraphics[scale=.2]{open_flow_switch_pipeline.png} 
+\caption{OpenFlow Architecture}
+% source: https://www.opennetworking.org/wp-content/uploads/2014/10/openflow-switch-v1.3.5.pdf
+\end{figure}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+
+Three important concepts:
+
+\begin {itemize}
+	\item \textbf {OpenFlow Protocol} Messages that allow for the control of the switch
+% The OpenFlow Protocol between the switch and the controller defines several messages that allow for the control of the switch by setting flow tables rules.
+    \item \textbf {Flow Tables} Match incoming packets; process them according to the rules specified by the controller.
+ % Tables that contain rules to match incoming packets, and process them according to the rules specified by the controller, like forwarding to a port, packet modification, among others. Classification is done via matching one or more fields present in the packet (physical input port, MAC and IP addresses, IP protocol, ...)
+    \item \textbf {Secure Channel} The channel should be cryptographically secure due to prevent spoofing and manipulation of this information.
+% OpenFlow defines the channel that is between the switch and the controller as a secure communications channel. As the messages that are exchanged between the switches and the controllers are critical for the correct operation of the system, the channel should be cryptographically secure, to prevent spoofing and manipulation of this information.
+\end {itemize}
+\end{minipage}\hfill
+
+% Groups represent sets of actions for flooding and more complex forwarding semanticsm like multipath, fast reroute, and link aggregation.
+
 \end{frame}
 
 \begin{frame}
 \frametitle{So, how does Basebox work?}
 \framesubtitle{OF-DPA}
+
 \begin{minipage}[t]{0.48\linewidth}
-	%\includegraphics[scale=0.5]{OFDPAComponentLayers.jpg} 
-	XXX include reference OpenFlow image, see OFDPAComponentLayers.jpg
+\begin{figure}
+\includegraphics[scale=0.3]{of-controller-switch.png}
+\caption{OF-DPA Architecture.}
+
+\end{figure}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.48\linewidth}
 
-   	OF-DPA is the application that translates OpenFlow messages into Broadcom SDK calls.
+   	OF-DPA is the application adapting OpenFlow calls to Broadcom Switch ASICs. 
+%   	Together with the OpenFlow Agent, an OpenFlow controller can control the ASICS, since OFDPA alone doesnt process the OF messages.
 	
 	OF-DPA abstracts:
 
 	\begin{itemize}
 	\item the network interfaces
-
 	\item the ASIC hardware tables into constructs like flow and group tables
 	\end{itemize}
 \end{minipage}\hfill
+
 \end{frame}
 
 \begin{frame}
@@ -246,7 +274,7 @@ They are traditionally blank network devices, that users can then use their choi
 
 Netlink is Linux Kernel interface used for communication between user and kernel.
 
-The Netlink socket family is referred to as AF\_NETLINK(AF: Address Family).
+The Netlink socket family is referred to as AF\_NETLINK (AF: Address Family).
 
 \end{frame}
 
@@ -268,9 +296,78 @@ Existing families in AF\_NETLINK like,
 
 \begin{frame}
 \frametitle{So, how does Basebox work?}
-\framesubtitle{rtnetlink}
+\framesubtitle{On Netlink messages}
 
-By binding to the NETLINK\_ROUTE socket we listen to the following messages:
+% Describe serializing aspect, data types, and nested structures
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\begin{figure}
+% source https://www.infradead.org/~tgr/libnl/doc/core.html
+\includegraphics[scale=0.3]{nlmsghdr.png}
+\caption{Netlink message header.}
+\end{figure}
+\end{minipage}
+\begin{minipage}[t]{0.48\linewidth}
+
+Byte stream that is then composed of one or many Netlink headers with associated payload.
+
+\end{minipage}
+\end{frame}
+
+\begin{frame}
+\frametitle{So, how does Basebox work?}
+\framesubtitle{On Netlink messages}
+
+% Describe serializing aspect, data types, and nested structures
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\begin{figure}
+% source https://www.infradead.org/~tgr/libnl/doc/core.html
+\includegraphics[scale=0.3]{nlmsghdr.png}
+\caption{Netlink message header}
+\end{figure}
+\end{minipage}
+\begin{minipage}[t]{0.48\linewidth}
+
+The type field describes the message content. Besides three standard message types, individual services define their own type (see \ref{messages}).
+
+%    The standard flag bits used in Netlink are
+%          NLM_F_REQUEST   Must be set on all request messages (typically
+%                          from user space to kernel space)
+%          NLM_F_MULTI     Indicates the message is part of a multipart
+%                          message terminated by NLMSG_DONE
+%          NLM_F_ACK       Request for an acknowledgment on success.
+%                          Typical direction of request is from user
+%                          space (CPC) to kernel space (FEC).
+%          NLM_F_ECHO      Echo this request.  Typical direction of
+%                          request is from user space (CPC) to kernel
+%                          space (FEC).
+% 	SRC: https://tools.ietf.org/html/rfc3549#section-2.2
+\pause 
+
+Despite the presence of the Sequence Number field, the Netlink protocol is \textbf{not} reliable, since there is no strict enforcement of this field.
+
+\end{minipage}
+\end{frame}
+
+\begin{frame}
+\frametitle{So, how does Basebox work?}
+\framesubtitle{Using rtnetlink}
+
+% http://man7.org/linux/man-pages/man7/rtnetlink.7.html
+% Link libnl
+
+% build a specific Netlink message
+% analyse return.
+
+rtnetlink allows for the control of network routes, IP addresses, link parameters, neighbors, queueing disciplines, traffic classes and packet classifiers.
+
+\end{frame}
+
+\label{messages}
+\begin{frame}
+\frametitle{So, how does Basebox work?}
+\framesubtitle{rtnetlink messages}
 
 {% Make table not overflow https://tex.stackexchange.com/a/423749 
 \small
@@ -287,44 +384,18 @@ Route & RTM\_NEWROUTE & RTM\_DELROUTE & RTM\_GETROUTE \\
 \hline 
 Address & RTM\_NEWADDR & RTM\_DELADDR & RTM\_GETADDR \\ 
 \hline 
+Routing rules & RTM\_NEWRULe & RTM\_DELRULE & RTM\_GETRULE \\ 
+\hline 
+Queuing disciplines & RTM\_NEWQDISC & RTM\_DELQDISC & RTM\_GETQDISC \\ 
+\hline 
+
 \end{tabular} 
 \end{table}
 }}
 
 \end{frame}
 
-\begin{frame}
-\frametitle{So, how does Basebox work?}
-\framesubtitle{On Netlink messages}
 
-% Describe serializing aspect, data types, and nested structures
-\begin{minipage}[t]{0.48\linewidth}
-\centering
-\begin{figure}
-% source https://www.infradead.org/~tgr/libnl/doc/core.html
-\includegraphics[scale=0.3]{nlmsghdr.png}
-\caption{Netlink message header.}
-\end{figure}
-\end{minipage}
-\begin{minipage}[t]{0.48\linewidth}
-
-Byte stream that is then composed into one, or many Netlink headers with associated payload.
-
-\end{minipage}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{So, how does Basebox work?}
-\framesubtitle{Using rtnetlink}
-
-% http://man7.org/linux/man-pages/man7/rtnetlink.7.html
-% Link libnl
-
-% build a specific Netlink message
-% analyse return.
-
-\end{frame}
 
 \begin{frame}
 \frametitle{So, how does Basebox work?}
@@ -333,6 +404,7 @@ Byte stream that is then composed into one, or many Netlink headers with associa
 baseboxd then translates the information carried by the previously mentioned messages into the OpenFlow datamodel. 
 
 Two OpenFlow help libraries known as rofl (Revised OpenFlow library).
+
 \begin{itemize}
 \item rofl-common: Core OpenFlow library, supporting versions from **check
 \item rofl-ofdpa: library designed to work with the TableType Patterns present in the OFDPA implementation.
@@ -374,6 +446,8 @@ Two OpenFlow help libraries known as rofl (Revised OpenFlow library).
 \frametitle{So, how does Basebox work?}
 \framesubtitle{L2 Bridging configuration}
 
+
+
 \end{frame}
 
 \begin{frame}
@@ -396,6 +470,8 @@ Two OpenFlow help libraries known as rofl (Revised OpenFlow library).
 \begin{frame}
 \frametitle{So, how does Basebox work?}
 \framesubtitle{Socket initialization}
+
+% Each socket can subscribe to any number of multicast groups of the netlink protocol it is connected to. The socket will then receive a copy of each message sent to any of the groups. Multicast groups are commonly used to implement event notifications.
 
 \end{frame}
 
